@@ -7,21 +7,25 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 app.get('/', (req, res) => {
-    //res.send('<h1>Hello World</h1>');
     res.sendFile(__dirname + '/index.html');
 });
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
-    //socket.broadcast.emit('Hi there');
+    console.log('A user connected');
+    console.log('Available rooms: ' + socket.rooms.size);
+
+    socket.on('disconnecting', () => {
+        console.log('Disconnecting');
+        console.log(socket.rooms); // the Set contains at least the socket ID
+    });
 
     socket.on('disconnect', () => {
-        console.log('user disconnected');
+        console.log('A user disconnected');
+        console.log('Available rooms: ' + socket.rooms.size);
     });
 
     socket.on('chat message', (msg) => {
         io.emit('chat message', msg);
-        //console.log('message: ' + msg);
     });
 });
 
